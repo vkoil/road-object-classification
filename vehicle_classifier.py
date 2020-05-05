@@ -106,6 +106,24 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
 print('Finished Training')
 
 
+class_correct = list(0. for i in range(6))
+class_total = list(0. for i in range(6))
+with torch.no_grad():
+    for data in testing_loader:
+        images, labels = data
+        outputs = lenet(images)
+        _, predicted = torch.max(outputs, 1)
+        c = (predicted == labels).squeeze()
+        for i in range(4):
+            label = labels[i]
+            class_correct[label] += c[i].item()
+            class_total[label] += 1
+
+
+for i in range(6):
+    print('Accuracy of %5s : %2d %%' % (
+        classes[i], 100 * class_correct[i] / class_total[i]))
+
 
 
 
