@@ -27,8 +27,7 @@ def item_retriever(dataset,
         return indices
     # CIFAR 100 pathway.
     else:
-        desired_classes = [8, 13, 48,
-                           58]  # numbers that correspond to the class in cifar100 - bicycle, bus, motorcycle, pickup truck
+        desired_classes = [8, 13, 48, 58]  # numbers that correspond to the class in cifar100 - bicycle, bus, motorcycle, pickup truck
         # CIFAR100 classes are ordered alphabetically from 0-99. Could try classes streetcar(81), tractor(89), or train(90)
         for i in range(length):
             target = dataset.__getitem__(i)
@@ -46,12 +45,11 @@ def label_to_index(tensor_labels):
     return tensor_labels
 
 
-transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (
-0.5, 0.5, 0.5))])  # For converting data into normalised tensors in the range [-1,1].
+transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  
+# For converting data into normalised tensors in the range [-1,1].
 
 # Obtaining CIFAR-10 and CIFAR-100
-training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,
-                                              download=False)  # change to true if required.
+training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=False)  # change to true if required.
 testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=False)
 training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=False)
 testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=False)
