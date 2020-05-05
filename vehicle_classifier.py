@@ -1,6 +1,8 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
+import torch.nn.functional as fucn
+from torch import nn
 
 
 def item_retriever(dataset, is_cifar10): #function which  takes a dataset and returns the indices of all the wanted classes.
@@ -47,6 +49,28 @@ testing_set = torch.utils.data.ConcatDataset([testing_set10, testing_set100])
 
 training_loader = torch.utils.data.DataLoader(training_set, batch_size = 5, shuffle=True)
 testing_loader = torch.utils.data.DataLoader(testing_set, batch_size = 5)
+
+class LeNet(nn.Module):
+    def __init__(self):
+        super(LeNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 10, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(10, 20, 5)
+        self.fc1 = nn.Linear(20 * 5 * 5, 256)50
+        self.fc2 = nn.Linear(256, 110)
+        self.fc3 = nn.Linear(110, 50)
+        self.fc4 = nn.Linear(, 6)
+
+    def forward(self, x):
+        x = self.pool(fucn.relu(self.conv1(x)))
+        x = self.pool(fucn.relu(self.conv2(x)))
+        x = x.reshape(-1, 20 * 5 * 5)
+        x = fucn.relu(self.fc1(x))
+        x = fucn.relu(self.fc2(x))
+        x = fucn.relu(self.fc3(x))
+        x = self.fc4(x)
+        return x
+lenet = LeNet()
 
 
 
