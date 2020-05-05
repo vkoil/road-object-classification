@@ -57,10 +57,10 @@ class LeNet(nn.Module):
         self.conv1 = nn.Conv2d(3, 10, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(10, 20, 5)
-        self.fc1 = nn.Linear(20 * 5 * 5, 256)50
+        self.fc1 = nn.Linear(20 * 5 * 5, 256)
         self.fc2 = nn.Linear(256, 110)
         self.fc3 = nn.Linear(110, 50)
-        self.fc4 = nn.Linear(, 6)
+        self.fc4 = nn.Linear(50, 6)
 
     def forward(self, x):
         x = self.pool(fucn.relu(self.conv1(x)))
