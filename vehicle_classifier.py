@@ -105,13 +105,16 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
 
 print('Finished Training')
 
+_, predicted = torch.max(outputs, 1)
+print('Predicted: ', ' '.join('%5s' % classes[predicted[j]] for j in range(4)))
+
 
 class_correct = list(0. for i in range(6))
 class_total = list(0. for i in range(6))
 with torch.no_grad():
     for data in testing_loader:
         images, labels = data
-        outputs = lenet(images)
+        outputs = lenet5(images)
         _, predicted = torch.max(outputs, 1)
         c = (predicted == labels).squeeze()
         for i in range(4):
