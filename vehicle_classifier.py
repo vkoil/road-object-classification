@@ -86,14 +86,15 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(training_loader, 0):
         # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
+        inputs = i
+        labels = data
 
         # zero the parameter gradients
         optimizerFunc.zero_grad()
 
         # forward + backward + optimize
         outputs = LeNet(inputs) #our LeNet output
-        loss = lossFunc(outputs, labels) #
+        loss = lossFunc(lenet(inputs), labels) #
         loss.backward()
         optimizerFunc.step()
 
