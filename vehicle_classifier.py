@@ -1,7 +1,7 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-import torch.nn.functional as func
+import torch.nn.functional as F
 from torch import nn
 import torch.optim as optim
 
@@ -17,7 +17,7 @@ def item_retriever(dataset, is_cifar10): #function which  takes a dataset and re
                 indices.insert(0,i) # for separating automobiles into the first half
             elif (target[1] == 9):
                 indices.append(i)      # for separating trucks into the second half
-        resize = int(len(indices)/20) # this needs to be done to ensure to only get 600 images (500 training and 100 testinfg) from each class. 
+        resize = int(len(indices)/20) # this needs to be done to ensure to only get 600 images (500 training and 100 testinfg) from each class.
         indices = indices[:resize] + indices[-resize:]
         return indices
     #CIFAR 100 pathway.
@@ -39,7 +39,7 @@ testing_set10 = torchvision.datasets.CIFAR10(root='./data',train = False, transf
 training_set100 = torchvision.datasets.CIFAR100(root='./data',train = True, transform = transformer, download = False)
 testing_set100 = torchvision.datasets.CIFAR100(root='./data',train = False, transform = transformer, download = False)
 
-#Filtering classes and merging data from both CIFAR sets.  
+#Filtering classes and merging data from both CIFAR sets.
 training_set10 = torch.utils.data.Subset(training_set10, item_retriever(training_set10, True))
 training_set100 = torch.utils.data.Subset(training_set100, item_retriever(training_set100, False))
 training_set = torch.utils.data.ConcatDataset([training_set10, training_set100])
@@ -48,8 +48,8 @@ testing_set10 = torch.utils.data.Subset(testing_set10, item_retriever(testing_se
 testing_set100 = torch.utils.data.Subset(testing_set100, item_retriever(testing_set100, False))
 testing_set = torch.utils.data.ConcatDataset([testing_set10, testing_set100])
 
-training_loader = torch.utils.data.DataLoader(training_set, batch_size = 5, shuffle=True)
-testing_loader = torch.utils.data.DataLoader(testing_set, batch_size = 5)
+training_loader = torch.utils.data.DataLoader(training_set, batch_size = 10, shuffle=True)
+testing_loader = torch.utils.data.DataLoader(testing_set, batch_size = 10)
 
 class LeNet(nn.Module):
     def __init__(self):
@@ -63,38 +63,36 @@ class LeNet(nn.Module):
         self.fc4 = nn.Linear(50, 6)
 
     def forward(self, x):
-        x = self.pool(func.relu(self.conv1(x)))
-        x = self.pool(func.relu(self.conv2(x)))
-        x = x.reshape(-1, 20 * 5 * 5)
-        x = func.relu(self.fc1(x))
-        x = func.relu(self.fc2(x))
-        x = func.relu(self.fc3(x))
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 20 * 5 * 5)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
         x = self.fc4(x)
-        output = self.out(x)
-        return output
-lenet = LeNet()
+
+lenet5 = LeNet()
 
 
 Epoch = 3
 learningRate = 0.01
 
 lossFunc = nn.CrossEntropyLoss()
-optimizerFunc = optim.Adm(LeNet.parameters(), lr=learningRate, betas = (0.9,0.99))
+optimizerFunc = optim.Adam(lenet5.parameters(), lr=learningRate, betas = (0.9,0.99))
 
 for epoch in range(Epoch):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(training_loader, 0):
         # get the inputs; data is a list of [inputs, labels]
-        inputs = i
-        labels = data
+        inputs, labels = data
 
         # zero the parameter gradients
         optimizerFunc.zero_grad()
 
         # forward + backward + optimize
-        outputs = LeNet(inputs) #our LeNet output
-        loss = lossFunc(lenet(inputs), labels) #
+        outputs = lenet5(inputs) #our LeNet output
+        loss = lossFunc(outputs, labels)
         loss.backward()
         optimizerFunc.step()
 
