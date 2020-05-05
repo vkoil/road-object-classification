@@ -9,8 +9,7 @@ import numpy as np
 
 
 
-def item_retriever(dataset,
-                   is_cifar10):  # function which  takes a dataset and returns the indices of all the wanted classes.
+def item_retriever(dataset, is_cifar10):  # function which  takes a dataset and returns the indices of all the wanted classes.
     indices = []
     length = dataset.__len__()
     # CIFAR 10 pathway.
@@ -21,8 +20,7 @@ def item_retriever(dataset,
                 indices.insert(0, i)  # for separating automobiles into the first half
             elif (target[1] == 9):
                 indices.append(i)  # for separating trucks into the second half
-        resize = int(len(
-            indices) / 20)  # this needs to be done to ensure to only get 600 images (500 training and 100 testinfg) from each class.
+        resize = int(len(indices) / 20)  # this needs to be done to ensure to only get 600 images (500 training and 100 testinfg) from each class.
         indices = indices[:resize] + indices[-resize:]
         return indices
     # CIFAR 100 pathway.
@@ -45,14 +43,13 @@ def label_to_index(tensor_labels):
     return tensor_labels
 
 
-transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-# For converting data into normalised tensors in the range [-1,1].
+transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])# For converting data into normalised tensors in the range [-1,1].
 
 # Obtaining CIFAR-10 and CIFAR-100
-training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=False)  # change to true if required.
-testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=False)
-training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=False)
-testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=False)
+training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=True)  # change to true if required.
+testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=True)
+training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=True)
+testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=True)
 
 # Filtering classes and merging data from both CIFAR sets.
 training_set10 = torch.utils.data.Subset(training_set10, item_retriever(training_set10, True))
@@ -65,7 +62,7 @@ testing_set = torch.utils.data.ConcatDataset([testing_set10, testing_set100])
 
 training_loader = torch.utils.data.DataLoader(training_set, batch_size=5, shuffle=True)
 testing_loader = torch.utils.data.DataLoader(testing_set, batch_size=5)
-classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
+
 
 class LeNet(nn.Module):
     def __init__(self):
@@ -97,12 +94,11 @@ lossFunc = nn.CrossEntropyLoss()
 optimizerFunc = optim.Adam(lenet5.parameters(), lr=learningRate, betas=(0.9, 0.99))
 
 for epoch in range(Epoch):  # loop over the dataset multiple times
-
     running_loss = 0.0
     for i, data in enumerate(training_loader, 0):
+        
         # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-
         labels = label_to_index(labels)  # Note: To match the label numbers to the number of classes.
 
         # zero the parameter gradients
@@ -117,11 +113,14 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
         # print statistics
         running_loss += loss.item()
         if i % 50 == 0:  # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 50))
+            print('[%d, %5d] loss: %.3f' %(epoch + 1, i + 1, running_loss / 50))
             running_loss = 0.0
 
 print('Finished Training')
+
+
+# <<<<<<<<<< Testing Section >>>>>>>>>> 
+classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
 
 #PATH = './cifar_net.pth'
 #torch.save(lenet5.state_dict(), PATH)
