@@ -63,19 +63,48 @@ class LeNet(nn.Module):
         self.fc4 = nn.Linear(50, 6)
 
     def forward(self, x):
-        x = self.pool(fucn.relu(self.conv1(x)))
-        x = self.pool(fucn.relu(self.conv2(x)))
+        x = self.pool(func.relu(self.conv1(x)))
+        x = self.pool(func.relu(self.conv2(x)))
         x = x.reshape(-1, 20 * 5 * 5)
         x = func.relu(self.fc1(x))
         x = func.relu(self.fc2(x))
         x = func.relu(self.fc3(x))
         x = self.fc4(x)
-        return x
+        output = self.out(x)
+        return output
 lenet = LeNet()
 
-lossFunc = nn.CrossEntropyLoss()
-optimizerFunc = optim.Adm(LeNet.parameters(), lr=0.01, momentum=0.9)
 
+Epoch = 3
+learningRate = 0.01
+
+lossFunc = nn.CrossEntropyLoss()
+optimizerFunc = optim.Adm(LeNet.parameters(), lr=learningRate, betas = (0.9,0.99))
+
+for epoch in range(Epoch):  # loop over the dataset multiple times
+
+    running_loss = 0.0
+    for i, data in enumerate(training_loader, 0):
+        # get the inputs; data is a list of [inputs, labels]
+        inputs, labels = data
+
+        # zero the parameter gradients
+        optimizerFunc.zero_grad()
+
+        # forward + backward + optimize
+        outputs = LeNet(inputs) #our LeNet output
+        loss = lossFunc(outputs, labels) #
+        loss.backward()
+        optimizerFunc.step()
+
+        # print statistics
+        running_loss += loss.item()
+        if i % 50 == 0:    # print every 2000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 50))
+            running_loss = 0.0
+
+print('Finished Training')
 
 
 
