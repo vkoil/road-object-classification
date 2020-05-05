@@ -45,7 +45,7 @@ def label_to_index(tensor_labels):
     return tensor_labels
 
 
-transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])  
+transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 # For converting data into normalised tensors in the range [-1,1].
 
 # Obtaining CIFAR-10 and CIFAR-100
@@ -147,6 +147,7 @@ class_total = list(0. for i in range(6))
 with torch.no_grad():
     for data in testing_loader:
         images, labels = data
+        labels = label_to_index(labels)
         outputs = lenet5(images)
         _, predicted = torch.max(outputs, 1)
         c = (predicted == labels).squeeze()
