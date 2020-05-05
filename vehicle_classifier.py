@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
 def item_retriever(dataset, is_cifar10):  # function which  takes a dataset and returns the indices of all the wanted classes.
     indices = []
     length = dataset.__len__()
@@ -46,10 +45,10 @@ def label_to_index(tensor_labels):
 transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])# For converting data into normalised tensors in the range [-1,1].
 
 # Obtaining CIFAR-10 and CIFAR-100
-training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=True)  # change to true if required.
-testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=True)
-training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=True)
-testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=True)
+training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=False)  # change to true if required.
+testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=False)
+training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=False)
+testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=False)
 
 # Filtering classes and merging data from both CIFAR sets.
 training_set10 = torch.utils.data.Subset(training_set10, item_retriever(training_set10, True))
