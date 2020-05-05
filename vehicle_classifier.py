@@ -1,8 +1,9 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
-import torch.nn.functional as fucn
+import torch.nn.functional as func
 from torch import nn
+import torch.optim as optim
 
 
 def item_retriever(dataset, is_cifar10): #function which  takes a dataset and returns the indices of all the wanted classes.
@@ -65,14 +66,15 @@ class LeNet(nn.Module):
         x = self.pool(fucn.relu(self.conv1(x)))
         x = self.pool(fucn.relu(self.conv2(x)))
         x = x.reshape(-1, 20 * 5 * 5)
-        x = fucn.relu(self.fc1(x))
-        x = fucn.relu(self.fc2(x))
-        x = fucn.relu(self.fc3(x))
+        x = func.relu(self.fc1(x))
+        x = func.relu(self.fc2(x))
+        x = func.relu(self.fc3(x))
         x = self.fc4(x)
         return x
 lenet = LeNet()
 
-
+lossFunc = nn.CrossEntropyLoss()
+optimizerFunc = optim.Adm(LeNet.parameters(), lr=0.01, momentum=0.9)
 
 
 
