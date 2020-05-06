@@ -8,6 +8,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+
+
+
+batch_num = 2
+Epoch = 10
+learningRate = 0.0001
+classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
+
+
+
+
+
 def item_retriever(dataset, is_cifar10):  # function which  takes a dataset and returns the indices of all the wanted classes.
     indices = []
     length = dataset.__len__()
@@ -42,6 +54,11 @@ def label_to_index(tensor_labels):
     return tensor_labels
 
 
+
+
+
+#<<<<<<<<<<<<<<<<<<<< Data Acquisition >>>>>>>>>>>>>>>>>>>>
+
 transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])# For converting data into normalised tensors in the range [-1,1].
 
 # Obtaining CIFAR-10 and CIFAR-100
@@ -59,9 +76,14 @@ testing_set10 = torch.utils.data.Subset(testing_set10, item_retriever(testing_se
 testing_set100 = torch.utils.data.Subset(testing_set100, item_retriever(testing_set100, False))
 testing_set = torch.utils.data.ConcatDataset([testing_set10, testing_set100])
 
-training_loader = torch.utils.data.DataLoader(training_set, batch_size=5, shuffle=True)
-testing_loader = torch.utils.data.DataLoader(testing_set, batch_size=5)
+training_loader = torch.utils.data.DataLoader(training_set, batch_size=batch_num, shuffle=True)
+testing_loader = torch.utils.data.DataLoader(testing_set, batch_size=batch_num)
 
+
+
+
+
+# <<<<<<<<<<<<<<<<<<<< Model Section >>>>>>>>>>>>>>>>>>>>
 
 class LeNet(nn.Module):
     def __init__(self):
@@ -86,11 +108,13 @@ class LeNet(nn.Module):
 
 
 lenet5 = LeNet()
-Epoch = 3
-learningRate = 0.01
-
 lossFunc = nn.CrossEntropyLoss()
 optimizerFunc = optim.Adam(lenet5.parameters(), lr=learningRate, betas=(0.9, 0.99))
+
+
+
+
+# <<<<<<<<<<<<<<<<<<<< Training Section >>>>>>>>>>>>>>>>>>>> 
 
 for epoch in range(Epoch):  # loop over the dataset multiple times
     running_loss = 0.0
@@ -117,28 +141,27 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
 
 print('Finished Training')
 
-
-# <<<<<<<<<< Testing Section >>>>>>>>>> 
-classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
-
 #PATH = './cifar_net.pth'
 #torch.save(lenet5.state_dict(), PATH)
+
+
+
+
+
+# <<<<<<<<<<<<<<<<<<<< Testing Section >>>>>>>>>>>>>>>>>>>> 
 
 correct = 0
 total = 0
 with torch.no_grad():
     for data in testing_loader:
         images, labels = data
+        labels = label_to_index(labels)
         outputs = lenet5(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print('Accuracy of the network on the 10000 test images: %d %%' % (
-    100 * correct / total))
-
-
-
+print('Accuracy of the network on the 10000 test images: %d %%' % (100 * correct / total))
 
 class_correct = list(0. for i in range(6))
 class_total = list(0. for i in range(6))
@@ -149,12 +172,11 @@ with torch.no_grad():
         outputs = lenet5(images)
         _, predicted = torch.max(outputs, 1)
         c = (predicted == labels).squeeze()
-        for i in range(4):
+        for i in range(batch_num):
             label = labels[i]
             class_correct[label] += c[i].item()
             class_total[label] += 1
 
 for i in range(6):
-    print('Accuracy of %5s : %2d %%' % (
-        classes[i], 100 * class_correct[i] / class_total[i]))
+    print('Accuracy of %5s : %2d %%' % (classes[i], 100 * class_correct[i] / class_total[i]))
 
