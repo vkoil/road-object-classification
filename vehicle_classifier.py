@@ -9,14 +9,10 @@ import numpy as np
 
 
 
-
-
-batch_num = 2
-Epoch = 10
-learningRate = 0.0001
+batch_num = 4
+Epoch = 20
+learningRate = 0.001
 classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
-
-
 
 
 
@@ -78,7 +74,6 @@ testing_set = torch.utils.data.ConcatDataset([testing_set10, testing_set100])
 
 training_loader = torch.utils.data.DataLoader(training_set, batch_size=batch_num, shuffle=True)
 testing_loader = torch.utils.data.DataLoader(testing_set, batch_size=batch_num)
-
 
 
 
