@@ -136,8 +136,8 @@ for epoch in range(Epoch):  # loop over the dataset multiple times
 
 print('Finished Training')
 
-#PATH = './cifar_net.pth'
-#torch.save(lenet5.state_dict(), PATH)
+#save_path = './cifar_net.pth'
+#torch.save(lenet5.state_dict(), save_path)
 
 
 
