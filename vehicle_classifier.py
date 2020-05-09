@@ -9,51 +9,63 @@ import Resources.train as trainer
 import Models.LeNet5_C as ln5c
 
 def main():
-    batch_num = 4
-    epochs = 10
+    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    #adjustable parameters
+    batch_num = 5
+    epochs = 20
     learningRate = 0.001
-    classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    training_loader, testing_loader = acquire.load_vehicles(batch_num)
-
-
     nnet = ln5c.LeNet5C() #Check import statement on change
     lossFunc = nn.CrossEntropyLoss()
     optimizerFunc = optim.Adam(nnet.parameters(), lr=learningRate, betas=(0.9, 0.99))
+
+
+    #loading datasets
+    training_loader, testing_loader = acquire.load_vehicles(batch_num)
+    
+    #running training
     trainer.train(training_loader, optimizerFunc, lossFunc, nnet, epochs)
 
+    #set classes
+    classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
+
+    
     # <<<<<<<<<<<<<<<<<<<< Testing Section >>>>>>>>>>>>>>>>>>>> 
 
     correct = 0
-    total = 0
+    overall = 0
+    with torch.no_grad():
+        for data in testing_loader:
+            images, labels = data
+            labels = helpers.label_to_index(labels) #mapping labels to indices for consistency
+            outputs = nnet(images)
+            answer = (torch.max(outputs.data, 1))[1]
+            overall += labels.size(0)
+            correct += (answer == labels).sum().item()
+
+    print('Network accuracy: %d %%' % (100 * correct / overall))
+
+    class_correct = list(0. for i in range(len(classes)))
+    class_overall = list(0. for i in range(len(classes)))
     with torch.no_grad():
         for data in testing_loader:
             images, labels = data
             labels = helpers.label_to_index(labels)
             outputs = nnet(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-
-    print('Accuracy of the network on the 10000 test images: %d %%' % (100 * correct / total))
-
-    class_correct = list(0. for i in range(6))
-    class_total = list(0. for i in range(6))
-    with torch.no_grad():
-        for data in testing_loader:
-            images, labels = data
-            labels = helpers.label_to_index(labels)
-            outputs = nnet(images)
-            _, predicted = torch.max(outputs, 1)
-            c = (predicted == labels).squeeze()
-            for i in range(len(labels)):
+            answer = (torch.max(outputs, 1))[1]
+            correct_inc = (answer == labels).squeeze()
+            for i in range(batch_num):
                 label = labels[i]
-                class_correct[label] += c[i].item()
-                class_total[label] += 1
+                #passing 0d tensors
+                if (correct_inc.dim() == 0):
+                    class_correct[label] += correct_inc.item()
+                else:
+                    class_correct[label] += correct_inc[i].item()
+
+                class_overall[label] += 1
 
     for i in range(6):
-        print('Accuracy of %5s : %2d %%' % (classes[i], 100 * class_correct[i] / class_total[i]))
+        print("Accuracy of class ", classes[i], ": ",int(100 * class_correct[i] / class_overall[i]),"%", sep = "")
 
 
 
