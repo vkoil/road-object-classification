@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import metrics
 import Resources.helpers as helpers
 import Resources.data_acquisition as acquire
 import Resources.train as trainer
@@ -12,9 +13,9 @@ def main():
     #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     #adjustable parameters
-    batch_num = 5
-    epochs = 20
-    learningRate = 0.001
+    batch_num = 60
+    epochs = 100
+    learningRate = 0.0001
     nnet = ln5c.LeNet5C() #Check import statement on change
     lossFunc = nn.CrossEntropyLoss()
     optimizerFunc = optim.Adam(nnet.parameters(), lr=learningRate, betas=(0.9, 0.99))
@@ -23,8 +24,8 @@ def main():
     #loading datasets
     training_loader, testing_loader = acquire.load_vehicles(batch_num)
     
-    #running training
-    trainer.train(training_loader, optimizerFunc, lossFunc, nnet, epochs)
+    #running training and retrieving statistics 
+    epoch_plot, loss_plot, accuracy_plot = trainer.train(training_loader, optimizerFunc, lossFunc, nnet, epochs)
 
     #set classes
     classes = ["Car", "Truck", "Bicycle", "Bus", "Motorcycle", "Pickup"]
@@ -43,10 +44,16 @@ def main():
             overall += labels.size(0)
             correct += (answer == labels).sum().item()
 
+
     print('Network accuracy: %d %%' % (100 * correct / overall))
+    print()
+    print("Confusion Matrix: ")
 
     class_correct = list(0. for i in range(len(classes)))
     class_overall = list(0. for i in range(len(classes)))
+    # for confusion matrix
+    true = []
+    predicted = []
     with torch.no_grad():
         for data in testing_loader:
             images, labels = data
@@ -56,6 +63,8 @@ def main():
             correct_inc = (answer == labels).squeeze()
             for i in range(batch_num):
                 label = labels[i]
+                true.append(label)
+                predicted.append(answer[i].item())
                 #passing 0d tensors
                 if (correct_inc.dim() == 0):
                     class_correct[label] += correct_inc.item()
@@ -63,9 +72,25 @@ def main():
                     class_correct[label] += correct_inc[i].item()
 
                 class_overall[label] += 1
+    print(metrics.confusion_matrix(true,predicted))
+    print()
+    print(metrics.classification_report(true,predicted,target_names= classes, digits = 4))
+    print()
 
     for i in range(6):
         print("Accuracy of class ", classes[i], ": ",int(100 * class_correct[i] / class_overall[i]),"%", sep = "")
+
+    plt.figure()
+    plt.subplot(221)
+    plt.plot(epoch_plot, loss_plot)
+    plt.ylabel("Loss")
+    plt.subplot(212)
+    plt.plot(epoch_plot, accuracy_plot)
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+
+    plt.show()
+    
 
 
 
