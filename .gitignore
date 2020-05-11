@@ -14,3 +14,5 @@ data/cifar-100-python/meta
 data/cifar-100-python/test
 data/cifar-100-python/train
 .vscode/settings.json
+Models/ResNet.py
+Models/__pycache__/ResNet.cpython-38.pyc

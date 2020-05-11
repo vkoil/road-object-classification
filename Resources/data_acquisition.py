@@ -10,14 +10,24 @@ import Resources.helpers as helpers
 
 
 def load_vehicles(batch_num):
+    """
+    # For converting data into normalised grayscale tensors in the range [-1,1].
+    transformer_test = transforms.Compose([transforms.Grayscale(1), transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
+    transformer_train = transforms.Compose([transforms.Grayscale(1), transforms.RandomResizedCrop(32), transforms.RandomHorizontalFlip(),
+                                            transforms.ToTensor(), transforms.Normalize((0.5,),(0.5,))])
+    """
+    #3-channel transformations
+    transformer_test = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))])
+    transformer_train = transforms.Compose([transforms.RandomResizedCrop(32), transforms.RandomHorizontalFlip(),
+                                            transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
+
     
-    transformer = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])# For converting data into normalised tensors in the range [-1,1].
 
     # Obtaining CIFAR-10 and CIFAR-100
-    training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer,download=False)  # change to true if required.
-    testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer, download=False)
-    training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer, download=False)
-    testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer, download=False)
+    training_set10 = torchvision.datasets.CIFAR10(root='./data', train=True, transform=transformer_train,download=False)  # change to true if required.
+    testing_set10 = torchvision.datasets.CIFAR10(root='./data', train=False, transform=transformer_train, download=False)
+    training_set100 = torchvision.datasets.CIFAR100(root='./data', train=True, transform=transformer_test, download=False)
+    testing_set100 = torchvision.datasets.CIFAR100(root='./data', train=False, transform=transformer_test, download=False)
 
     # Filtering classes and merging data from both CIFAR sets.
     training_set10 = torch.utils.data.Subset(training_set10, helpers.item_retriever(training_set10, True))

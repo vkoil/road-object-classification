@@ -7,16 +7,15 @@ from sklearn import metrics
 import Resources.helpers as helpers
 import Resources.data_acquisition as acquire
 import Resources.train as trainer
-import Models.LeNet5_C as ln5c
+import Models.LeNet5_A as model0
 
 def main():
-    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     #adjustable parameters
-    batch_num = 60
-    epochs = 100
+    batch_num = 6
+    epochs = 5
     learningRate = 0.0001
-    nnet = ln5c.LeNet5C() #Check import statement on change
+    nnet = model0.LeNet5A()# ---> Check import statement on change, and check data acquisition and model for no. of input channels. 
     lossFunc = nn.CrossEntropyLoss()
     optimizerFunc = optim.Adam(nnet.parameters(), lr=learningRate, betas=(0.9, 0.99))
 
@@ -81,13 +80,13 @@ def main():
         print("Accuracy of class ", classes[i], ": ",int(100 * class_correct[i] / class_overall[i]),"%", sep = "")
 
     plt.figure()
-    plt.subplot(221)
+    plt.subplot(211)
     plt.plot(epoch_plot, loss_plot)
-    plt.ylabel("Loss")
+    plt.ylabel("Running Loss")
     plt.subplot(212)
     plt.plot(epoch_plot, accuracy_plot)
     plt.xlabel("Epoch")
-    plt.ylabel("Accuracy")
+    plt.ylabel("Accuracy %")
 
     plt.show()
     
