@@ -11,7 +11,7 @@ import Resources.helpers as helpers
 class LeNet5D(nn.Module):
     def __init__(self):
         super(LeNet5D, self).__init__()
-        self.conv1 = nn.Conv2d(1, 30, 5)
+        self.conv1 = nn.Conv2d(3, 30, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(30, 50, 5)
         self.fc1 = nn.Linear(50 * 5 * 5, 572)

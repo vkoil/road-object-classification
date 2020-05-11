@@ -17,3 +17,7 @@ CIFAR-100:
 Total of 100 classes in the dataset, of which four classes will be used.
 Similarly, the 600 images will consist of 500 training images and 100 testing images.
 These images are also coloured and have dimensions of 32x32 pixels.
+
+
+**Lookup-table for interpreting confusion matricies:
+(class:row/col)  {car: 0, truck: 1, bicycle: 2, bus: 3, motorcycle: 4, pickup: 5}

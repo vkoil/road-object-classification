@@ -7,15 +7,15 @@ from sklearn import metrics
 import Resources.helpers as helpers
 import Resources.data_acquisition as acquire
 import Resources.train as trainer
-import Models.LeNet5_A as model0
+import Models.LeNet5_D as model0
 
 def main():
     
     #adjustable parameters
-    batch_num = 6
-    epochs = 5
-    learningRate = 0.0001
-    nnet = model0.LeNet5A()# ---> Check import statement on change, and check data acquisition and model for no. of input channels. 
+    batch_num = 10
+    epochs = 20
+    learningRate = 0.0005
+    nnet = model0.LeNet5D()# ---> Check import statement on change, and check data acquisition and model for no. of input channels. 
     lossFunc = nn.CrossEntropyLoss()
     optimizerFunc = optim.Adam(nnet.parameters(), lr=learningRate, betas=(0.9, 0.99))
 

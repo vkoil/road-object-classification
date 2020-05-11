@@ -1,0 +1,30 @@
+Network accuracy: 42 %
+
+Confusion Matrix:
+[[30 33  9  8  3 17]
+ [30 24 11 13  5 17]
+ [ 9  9 47 11 19  5]
+ [ 9  3  6 53 17 12]
+ [ 0  6 17  9 56 12]
+ [15  4 11 16 16 38]]
+
+              precision    recall  f1-score   support
+
+         Car     0.3226    0.3000    0.3109       100
+       Truck     0.3038    0.2400    0.2682       100
+     Bicycle     0.4653    0.4700    0.4677       100
+         Bus     0.4818    0.5300    0.5048       100
+  Motorcycle     0.4828    0.5600    0.5185       100
+      Pickup     0.3762    0.3800    0.3781       100
+
+    accuracy                         0.4133       600
+   macro avg     0.4054    0.4133    0.4080       600
+weighted avg     0.4054    0.4133    0.4080       600
+
+
+Accuracy of class Car: 30%
+Accuracy of class Truck: 24%
+Accuracy of class Bicycle: 47%
+Accuracy of class Bus: 53%
+Accuracy of class Motorcycle: 56%
+Accuracy of class Pickup: 38%
